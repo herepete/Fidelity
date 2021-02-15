@@ -41,7 +41,7 @@ beautiful soup and requests have been installed in pip
 
 edit the stockstocheck.txt as needed ( format: fundname, ISIN number, benchmark cost)
 
-fundname -can be anything you want, 
+fundname -can be anything you want, (note if its to long the print formatting will look odd)
 ISIN number - find on the funds page
 Benchmark cost - enter a price here, i entered a price on the last day i invested so if the fund went up or down against the benchmark it was easy for me to see.
 
@@ -95,7 +95,7 @@ Enter your options:
 1
 Ok i am going to start but due to rate limiting each request will wait 1 second before running
 Fund                     Current Price            Historic Price           % Change
-japanese fund            3.23                     3.22                     0.3
+Japanese fund            3.23                     3.22                     0.3
 Fidelity global          5.418                    5.37                     0.9
 Fidelity pacific         2.37                     2.285                    3.7
 Fundsmith                5.7001                   5.64                     1.1
@@ -106,7 +106,7 @@ Rathbourne               1.73                     1.71                     1.2
 Vanguard Dev World       464.4838                 464.43                   0.0
 ```
 
-installation
+Installation
 ============
 
 ```
