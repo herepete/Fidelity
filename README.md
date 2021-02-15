@@ -2,7 +2,7 @@
 
 Introduction
 ============
-using beautifulsoup and Fidelity API to get data back from Fidelity.co.uk
+using beautifulsoup and the Fidelity API to get data back from Fidelity.co.uk
 
 Fidelity has a good site
 But there were a few financical bits i wanted to see which aren't easily viewable on 1 page.
@@ -42,7 +42,9 @@ beautiful soup and requests have been installed in pip
 edit the stockstocheck.txt as needed ( format: fundname, ISIN number, benchmark cost)
 
 fundname -can be anything you want, (note if its to long the print formatting will look odd)
-ISIN number - find on the funds page
+
+ISIN number - found on the funds page
+
 Benchmark cost - enter a price here, i entered a price on the last day i invested so if the fund went up or down against the benchmark it was easy for me to see.
 
 Run python script
