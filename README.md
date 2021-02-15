@@ -58,6 +58,46 @@ Example
 Enter your options:
 1) For current % change in Fidelity Pension
 2) Overlapping portfolio
+2
+Ok i am going to start but due to rate limiting each request will wait 1 second before running
+Here is what is duplicated in the portfolio...
+Alphabet Inc A           Fidelity global
+Alphabet Inc A           Vanguard Dev World
+Amazon.com Inc           Rathbourne
+Amazon.com Inc           Vanguard Dev World
+Apple Inc                Fidelity global
+Apple Inc                Vanguard Dev World
+Facebook Inc A           Fundsmith
+Facebook Inc A           Vanguard Dev World
+Intuit Inc               Fundsmith
+Intuit Inc               Rathbourne
+L'Oreal SA               Fundsmith
+L'Oreal SA               Glg Europe
+Microsoft Corp           Fidelity global
+Microsoft Corp           Fundsmith
+Microsoft Corp           Vanguard Dev World
+PayPal Holdings Inc      Fundsmith
+PayPal Holdings Inc      Rathbourne
+SAP SE                   Fidelity global
+SAP SE                   Glg Europe
 
+
+
+./version3.py
+Enter your options:
+1) For current % change in Fidelity Pension
+2) Overlapping portfolio
+1
+Ok i am going to start but due to rate limiting each request will wait 1 second before running
+Fund                     Current Price            Historic Price           % Change
+japanese fund            3.23                     3.22                     0.3
+Fidelity global          5.418                    5.37                     0.9
+Fidelity pacific         2.37                     2.285                    3.7
+Fundsmith                5.7001                   5.64                     1.1
+Hsbc Ftse                5.9189                    5.91                    0.2
+Glg Europe               7.8                      7.71                     1.2
+Marlborough Ss           22.56                    22.68                    -0.5
+Rathbourne               1.73                     1.71                     1.2
+Vanguard Dev World       464.4838                 464.43                   0.0
 
 
