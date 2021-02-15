@@ -6,6 +6,8 @@ using beautifulsoup and Fidelity API to get data back from Fidelity.co.uk
 
 Fidelity has a good site
 But there were a few financical bits i wanted to see which aren't easily viewable on 1 page.
+1) check current price of funds v a benchmark i have set
+2) check which funds have an overlap in their portfolio
 
 This is version 3 , version 1 and 2 were build on a local machine, 
 the main difference being version 3 where possible makes use of the Fidelity API
@@ -43,9 +45,19 @@ fundname -can be anything you want,
 ISIN number - find on the funds page
 Benchmark cost - enter a price here, i entered a price on the last day i invested so if the fund went up or down against the benchmark it was easy for me to see.
 
+Run python script
+
 Notes
 ======
 i have put a 1 second delay (which can be edited in memory) in between each external call to stop hammering of Fidelity.
+
+Example
+=======
+
+./version3.py
+Enter your options:
+1) For current % change in Fidelity Pension
+2) Overlapping portfolio
 
 
 
