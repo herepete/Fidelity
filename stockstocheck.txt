@@ -1,0 +1,10 @@
+# fundname,ISIN number,benchmark cost
+japanese fund,GB0004521737,322.18p
+Fidelity global,LU1033663649,£5.37
+Fidelity pacific,LU1033664373,£2.285
+Fundsmith,GB00B41YBW71,£5.64
+Hsbc Ftse,GB00B80QFX11, £5.91
+Glg Europe,GB00B0119487,771.2p
+Marlborough Ss,GB00B907GH23,2268.47p
+Rathbourne,GB00BH0P2M97,171.00p
+Vanguard Dev World,GB00B59G4Q73,£464.43
