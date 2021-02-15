@@ -36,7 +36,7 @@ Managment https://www.fidelity.co.uk/factsheet-data/api/factsheet/{ISIN}/fundMan
 Steps to get running
 ====================
 
-written in python3.6
+written in python3.6 (anything less than version 3.6 it will error due to string formatting)
 beautiful soup and requests have been installed in pip
 
 edit the stockstocheck.txt as needed ( format: fundname, ISIN number, benchmark cost)
@@ -104,4 +104,12 @@ Glg Europe               7.8                      7.71                     1.2
 Marlborough Ss           22.56                    22.68                    -0.5
 Rathbourne               1.73                     1.71                     1.2
 Vanguard Dev World       464.4838                 464.43                   0.0
+```
+
+installation
+============
+
+```
+pip3.6 install bs4
+git clone https://github.com/herepete/Fidelity.git
 ```
