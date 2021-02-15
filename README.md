@@ -10,7 +10,7 @@ But there were a few financical bits i wanted to see which aren't easily viewabl
 2) check which funds have an overlap in their portfolio
 
 This is version 3 , version 1 and 2 were build on a local machine, 
-the main difference being version 3 where possible makes use of the Fidelity API
+the main difference being version 3 where possible makes use of the Fidelity API (which is a lot nicer than trying to scrape data from a webpage)
 
 the key thing to understand in the API is the ISIN number which is a unique value per fund.
 
