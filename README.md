@@ -41,11 +41,11 @@ beautiful soup and requests have been installed in pip
 
 edit the stockstocheck.txt as needed ( format: fundname, ISIN number, benchmark cost):
 
-*fundname -can be anything you want, (note if its to long the print formatting will look odd)
+* fundname -can be anything you want, (note if its to long the print formatting will look odd)
 
-*ISIN number - found on the funds page
+* ISIN number - found on the funds page
 
-*Benchmark cost - enter a price here, i entered a price on the last day i invested so if the fund went up or down against the benchmark it was easy for me to see.
+* Benchmark cost - enter a price here, i entered a price on the last day i invested so if the fund went up or down against the benchmark it was easy for me to see.
 
 Run python script
 
