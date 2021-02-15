@@ -54,6 +54,7 @@ i have put a 1 second delay (which can be edited in memory) in between each exte
 Example
 =======
 
+```
 ./version3.py
 Enter your options:
 1) For current % change in Fidelity Pension
@@ -80,9 +81,13 @@ PayPal Holdings Inc      Fundsmith
 PayPal Holdings Inc      Rathbourne
 SAP SE                   Fidelity global
 SAP SE                   Glg Europe
+```
 
 
 
+
+
+```
 ./version3.py
 Enter your options:
 1) For current % change in Fidelity Pension
@@ -99,5 +104,4 @@ Glg Europe               7.8                      7.71                     1.2
 Marlborough Ss           22.56                    22.68                    -0.5
 Rathbourne               1.73                     1.71                     1.2
 Vanguard Dev World       464.4838                 464.43                   0.0
-
-
+```
