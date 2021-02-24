@@ -677,6 +677,8 @@ while True:
                 dt=str(detailitem)
                 print (dt.ljust(25), end='')
             print()
+        print()
+        input("Press a button to continue")
 
     elif choice =="2":
         #build database of holdings
@@ -687,6 +689,8 @@ while True:
                 api_get_fund_holdings(fundname=i[0])
         #sort duplicates and print
         sort_out_duplicates()
+        print()
+        input("Press a button to continue")
 
     elif choice =="3":
         # read in funds
