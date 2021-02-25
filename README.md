@@ -232,6 +232,7 @@ Installation
 ============
 
 ```
+pip3.6 install requests
 pip3.6 install bs4
 git clone https://github.com/herepete/Fidelity.git
 ```
