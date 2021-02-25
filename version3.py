@@ -43,6 +43,17 @@ etimer_stop=0
 etimer_start=0
 etimer_diffenence=0
 
+def headers_event():
+
+    user_agent_list = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.1 Safari/605.1.15'
+
+    user_agent = user_agent_list
+    #Set the headers
+    headers = {'User-Agent': user_agent}
+
+
+
+
 def time_events(stop,start,stage):
 
 
@@ -409,7 +420,18 @@ def getprice_soup():
     #pdb.set_trace()
     url_to_check=portfolio_link['fkeystatitics']
     res=requests.get(url_to_check)
-    res.raise_for_status()
+
+    try:
+        res.raise_for_status()
+    except Exception as e:
+        print ("***Woops, something went wrong")
+        print ("***Url to check=",url_to_check)
+        print ("***Error code",e)
+        print ()
+        return("bla")
+
+
+
     soup =bs4.BeautifulSoup(res.text,'html.parser')
     name_box = soup.find('h3', attrs={'class': 'detail_value'})
     #the above line is taken from inspecting (in browser right click object > inspect) the webpage, as "detail value" is unique its an easy way to strip data down
@@ -659,11 +681,16 @@ while True:
                 hist_price=i[2]
                 hist_price=strip_chars(hist_price)
 
+                if price=="bla":
+                    #pdb.set_trace()
+                    build_list.append([i[0],"Error",hist_price,"Not Possible"])
+                    continue
+
                 try:
                     movement=price_movement(price,hist_price)
                     build_list.append([i[0],price,hist_price,movement])
                 except:
-                    build_list.append(i[0],hist_price,price,"error")
+                    build_list.append([i[0],price,hist_price,"Not Possible"])
 
 
         #lets print it all
