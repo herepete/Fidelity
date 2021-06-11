@@ -32,6 +32,7 @@ if args.timer:
 if args.etimer:
     print("Extreme Timer turned on")
 data=[]
+data_sw=[]
 portfolio_link=[]
 
 
@@ -129,6 +130,7 @@ def understand_api_data(soupin):
 def get_morning_star_rating(urlfund):
     #again getting hacky , i am searching for the term alhpa, the easy approach might be to
     #get the whole table in a list and then i can loop through it
+    pdb.set_trace()
     res=requests.get(urlfund)
     try:
         res.raise_for_status()
@@ -140,6 +142,8 @@ def get_morning_star_rating(urlfund):
 
     soup =bs4.BeautifulSoup(res.text,'html.parser')
     test1=soup.find_all('td')
+    trailing_returns=strip_html(str(soup.find_all('Trailing Returns')[1]))
+    pdb.set_trace()
 
     #approach2 more manual map each field
     #in use
@@ -370,7 +374,11 @@ def strip_html(input1):
 def strip_chars(input1):
 
     # to deal with occsional odd input
-    if "/" in input1:
+    #print ("in=",input1)
+    #if "29.16" in input1:
+    #    pdb.set_trace()
+    if "/" in input1 and "£" not in input1:
+     #   print ("in=0")
         # the only case i have seen this is marlbourugh if another one has the same slash and is in pounds this is going to error
         hacked=input1.split("/")
         hacked=hacked[0]
@@ -378,11 +386,18 @@ def strip_chars(input1):
         hacked=hacked.replace('£','')
         hacked=hacked.replace(',','')
         hacked=int(float(hacked))/100
+    elif "/" in input1 and "£" in input1:
+        # to cover a slash and is in pounds i.e '£29.16/£29.16'
+        hacked=input1.split("/")
+        hacked=hacked[0]
+        hacked=hacked.replace('£','')
     elif "p" in input1:
+      #  print ("in=1")
         #converting pence into pounds
         hacked=input1.replace('p','')
         hacked=int(float(hacked))/100
     else:
+       # print ("in=2")
         hacked=input1.replace('p','')
         hacked=hacked.replace('£','')
         hacked=hacked.replace(',','')
@@ -442,11 +457,28 @@ def getprice_soup():
     return res
 
 
+def read_in_lookup_sw():
+    global data_sw
+    filetocheck='stockstocheck_sw.txt'
+    #understand_api_data(soupin=data_sw)
+    #pdb.set_trace()
+    with open(filetocheck, newline='') as f:
+        reader = csv.reader(f)
+        data_sw = list(reader)
+    if args.verbose:
+        print("***From incoming data  > 'read_in_lookup()***'")
+        for i in data:
+            print ("***",i,"***")
+            #if i[0][0] is not "#":
+            #    fidelity_api(isin=i[1])
+
+        print()
 
 def read_in_lookup():
     #readin in lookup
     global data
-    with open('stockstocheck.txt', newline='') as f:
+    filetocheck='stockstocheck.txt'
+    with open(filetocheck, newline='') as f:
         reader = csv.reader(f)
         data = list(reader)
     if args.verbose:
@@ -642,7 +674,8 @@ def menu_choice():
     # offer users choice
     os.system('clear')
     print ("Enter your options:")
-    print ("1) For current % change in Fidelity Pension")
+    print ("1) For current % change in Fidelity Pension v Benchmark - lookup used stockstocheck.txt")
+    print ("111)for Fund performance -lookup used Fundperformance.txt")
     print ("2) Overlapping portfolio")
     print ("3) Search for funds (if you want up to date funds run step 9 first)") 
     print ("There are 3 tests:")
@@ -650,7 +683,7 @@ def menu_choice():
     print ("    B) Does the Fund have a 'Above Average' or 'High' 3 and 5 year Morningstar return values" )
     print ("    C) Is it an accumlation fund (i.e not an income fund)" )
     print ("9) Load all funds - (about 3,000)")
-    print ("10) Load 2 finds - used in testing")
+    print ("10) Load 2 funds - used in testing")
     print ("11) Load 100 funds - used in testing")
     print ("12) Load 500 funds - used in testing")
     #print ("4) Performance v Index")
@@ -706,6 +739,12 @@ while True:
             print()
         print()
         input("Press a button to continue")
+
+    elif choice =="111":
+        import morningstar
+        print()
+        print("Performance Done, Press enter to continue")
+        input("")
 
     elif choice =="2":
         #build database of holdings
