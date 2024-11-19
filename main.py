@@ -12,6 +12,12 @@ from datetime import datetime
 from collections import deque
 recent_inputs = deque(maxlen=10)
 import openai
+import insert_into_mariadb
+import subprocess
+import socket
+import test_openai
+
+
 
 
 # Get the current date
@@ -20,8 +26,10 @@ current_date = datetime.now()
 # Format the date as ddmmyy
 formatted_date = current_date.strftime("%d%m%y")
 
+
 # Assign it to a variable
 ddmmyy_variable = formatted_date
+today_date = datetime.now().date()
 
 
 #Global variables
@@ -97,7 +105,10 @@ def write_out_failures(fund,reason):
 # String to write to the file
     fundname=fund[0]
     isin=fund[1]
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
     lines=[fundname,",",isin,",",reason," ",ddmmyy_variable,"\n"]
+    insert_into_mariadb.insert_fund_record(date=today_date, time=current_time, fund=fundname, isin=isin, log=reason)
 
     # Open a file in write mode ('w') and write the string to it
     with open('failer_test_fund.txt', 'a') as file:
@@ -238,6 +249,84 @@ def extra_checks(funds_to_check_more):
         fund.append(morning_star_rating)
     return (funds_to_check_more)
 
+def project_status():
+
+
+    try:
+        if  config.testing ==1:
+            mode="Testing"
+        elif config.testing ==0:
+            mode="Live"
+        else:
+            mode="Unsure"
+    except:
+        mode="Unsure -Something Went Wrong"
+
+    try:
+        response = requests.get('https://api.ipify.org?format=json')
+        if response.status_code == 200:
+            ip_data = response.json()
+            web_address = "http://" + ip_data['ip']
+        else:
+            web_address = "Could not get Ip Address"
+    except Exception as e:
+            web_address = "Could not get Ip Address"
+
+    try:
+        # Check the status of the MariaDB service
+        result = subprocess.run(
+            ["systemctl", "is-active", "--quiet", "mariadb"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        # If the command exits with code 0, MariaDB is running
+        maria_running="Yes"
+    except Exception as e:
+        maria_running="No"
+
+    flask_running = False
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        try:
+            sock.connect(("127.0.0.1", 5000))
+            flask_running = "Yes"
+        except OSError:
+            flask_running = "No"
+
+
+    apache_running = False
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        try:
+            sock.connect(("127.0.0.1", 80))
+            apache_running = "Yes"
+        except OSError:
+            apache_running = "No"
+    try:
+        rv=test_openai.return_test_query()
+        if rv == 1:
+            openai_running="Running"
+        else:
+            openai_running="Not Running"
+    except:
+            openai_running="Not Running"
+
+
+    #mode="live_mo_hc"
+    #maria_running="yes_m"
+    #flask_running="yes_f"
+    #appache_running="yes_a_hc"
+    #openai_running="yes_ai_hc"
+    #web_address="http://35.178.187.229/"
+
+
+    print ("====Status===")
+    print (f"Mode={mode}")
+    print (f"MariaDB Running={maria_running}")
+    print (f"Flask Running={flask_running}")
+    print (f"Apache Running={apache_running}")
+    print (f"OpenAI Connection working={openai_running}")
+    print (f"Web Address={web_address}")
+    print ("====")
+
 
 def ai_feedback(df):
 
@@ -268,9 +357,15 @@ def ai_feedback(df):
         # Print the AI's response
         print ("Here are the raw results and the AI feedback on those funds...")
         print(response['choices'][0]['message']['content'])
-        print("AI Anslysis completed ")
+        print("AI Analysis completed ")
+        ai_date = datetime.now().date()
+        ai_time = datetime.now().time()
+        insert_into_mariadb.insert_into_automation(ai_date,ai_time,Feedback=response['choices'][0]['message']['content'])
+
     except Exception as e:
         print("AI failed somewhere error=",e)
+
+
 
 def income_funds():
     from pprint import pprint
@@ -382,7 +477,7 @@ def income_funds():
         else:
             ongoing_charge_value = 0
         if ongoing_charge_value > config.max_ongoing_charge:
-            write_out_failures(fund=inc_funds,reason="cost to high")
+            write_out_failures(fund=inc_funds,reason=f"cost to high at {ongoing_charge_value}")
             menu_header(Income_Stocks_Found=total_income_funds, Previously_checked=striped_out , This_round_checking=len(list_of_income_funds)  , This_Round_Rejected=rejected_funds_this_round , This_Round_Suitable_Funds_found=len(results),verbose_message="Cost to high")
             rejected_funds_this_round+=1
             continue
@@ -408,14 +503,17 @@ def income_funds():
             continue
         try:
             if float(distribution_yield) < config.min_yield:
-                write_out_failures(fund=inc_funds,reason="Yield to Low")
+                write_out_failures(fund=inc_funds,reason=f"Yield to Low rate={distribution_yield}")
                 rejected_funds_this_round+=1
                 menu_header(Income_Stocks_Found=total_income_funds, Previously_checked=striped_out , This_round_checking=len(list_of_income_funds)  , This_Round_Rejected=rejected_funds_this_round , This_Round_Suitable_Funds_found=len(results),verbose_message="Yield to Low")
                 continue
-        except:
-            write_out_failures(fund=inc_funds,reason="Yield Check failure")
-            rejected_funds_this_round+=1
-            menu_header(Income_Stocks_Found=total_income_funds, Previously_checked=striped_out , This_round_checking=len(list_of_income_funds)  , This_Round_Rejected=rejected_funds_this_round , This_Round_Suitable_Funds_found=len(results),verbose_message="Yield check failure")
+        except Exception as ycf :
+            if distribution_yield=="":
+                write_out_failures(fund=inc_funds,reason=f"Yield Check failure - no Yield Found")
+            else:
+                write_out_failures(fund=inc_funds,reason=f"Yield Check failure DY Found={distribution_yield} , error={ycf}")
+                rejected_funds_this_round+=1
+                menu_header(Income_Stocks_Found=total_income_funds, Previously_checked=striped_out , This_round_checking=len(list_of_income_funds)  , This_Round_Rejected=rejected_funds_this_round , This_Round_Suitable_Funds_found=len(results),verbose_message="Yield check failure")
             continue
         try:
         
@@ -437,12 +535,12 @@ def income_funds():
             annualized_return_value_check=config.annualized_return_value_check
             try:
                 if (float(year1) < annualized_return_value_check) or (float(years_annualised_3) < annualized_return_value_check) or (float( years_annualised_5) < annualized_return_value_check):
-                    write_out_failures(fund=inc_funds,reason="1 ,3 ,or 5 year return not good enough")
+                    write_out_failures(fund=inc_funds,reason=f"1,3,or 5 year check failed 1y={year1} 3y={years_annualised_3} 5y={years_annualised_5} ")
                     menu_header(Income_Stocks_Found=total_income_funds, Previously_checked=striped_out , This_round_checking=len(list_of_income_funds)  , This_Round_Rejected=rejected_funds_this_round , This_Round_Suitable_Funds_found=len(results),verbose_message="1,3 or 5 year return not good enough")
                     rejected_funds_this_round+=1
                     continue
             except:
-                write_out_failures(fund=inc_funds,reason="1,3,or 5 year check failed")
+                write_out_failures(fund=inc_funds,reason=f"1,3,or 5 year check failed 1y={year1} 3y={years_annualised_3} 5y={years_annualised_5} ")
                 rejected_funds_this_round+=1
                 menu_header(Income_Stocks_Found=total_income_funds, Previously_checked=striped_out , This_round_checking=len(list_of_income_funds)  , This_Round_Rejected=rejected_funds_this_round , This_Round_Suitable_Funds_found=len(results),verbose_message="1,3 or 5 year check failed")
                 continue
@@ -464,6 +562,13 @@ def income_funds():
     else:
         #sneding for extra checks 
         results=extra_checks(funds_to_check_more=results)
+        if config.write_out_db==1:
+            date_s = datetime.now().date()
+            time_s = datetime.now().time()
+            for i in results:
+                # ['abrdn High Yield Bond I Inc', 'GB0000939818', 0.69, '5.53', 'Quarterly', 12, 3, 3, 5.35, '4']
+                insert_into_mariadb.insert_fund_record_sucess(date=date_s, time=time_s, fund_name=i[0], isin=i[1], fee=i[2], yield_percentage=i[3], frequency=i[4], y1_annualized=i[5], y3_annualized=i[6], y5_annualized=i[7], last_years_yield=i[8], morning_star_rating=i[9])
+
         print()
         #print("This is what has been found based on Criteria Given")
         columns = ['Fund Name','ISIN', 'Fee (%)', 'Yield (%)',  'Frequency', 'Y1_Annualized', 'Y3_Annualized', 'Y5_Annualized','Last Years Yield','Morning Star Rating']
@@ -476,11 +581,17 @@ def income_funds():
             
 
 def menu_choice():
-    # offer users choice
-    print ("Enter your options:")
-    print ("1) ReLoad all funds - (about 3,000) - Rarely needs to be run")
-    print ("2) Find Income Funds matching criteria ")
-    print ("3) Run a basic openai query ")
+    # offer users choiceo
+    project_status()
+    print ("Enter your option:")
+    print ("1) Reload all funds - (about 3,000) - Rarely needs to be run")
+    print ("2) Find Income Funds matching criteria -note Anything already which has failed the checks will not be rechecked")
+    #print ("3) Run a basic openai query ")
+    print ("4) Empty DB and log file locally ")
+    print ("5) Check contents of DB")
+    #print ("6))Safety checks, db installed, appache running, flask installed,merge with point 3")
+    print ("7) Start Flask")
+    print ("8) Stop Flask")
     response=input("")
     return (response)
         
@@ -493,8 +604,26 @@ while True:
 
     elif choice =="2":
         income_funds()
+        import config
+        #if config.write_out_html==1:
+        #    write_out_to_html(information="hi 123")
+
     elif choice =="3":
         import test_openai
+    elif choice =="4":
+        #empty log file
+        with open("failer_test_fund.txt", "w") as file:
+            file.write("")  # Write an empty string to the file
+        insert_into_mariadb.empty_db()
+    elif choice =="5":
+        insert_into_mariadb.show_all_records(vlimit=10)
+        insert_into_mariadb.show_all_sucess(vlimit=10)
+        insert_into_mariadb.show_automation()
+    elif choice =="7":
+        os.system('sudo systemctl start flaskapp.service')
+    elif choice =="8":
+        os.system('sudo systemctl stop flaskapp.service')
+
     else:
         print ("I am not programmed for this...")
 
