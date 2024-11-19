@@ -307,7 +307,25 @@ def project_status():
         else:
             openai_running="Not Running"
     except:
-            openai_running="Not Running"
+            openai_running="Not Running-Something Errored"
+    try:
+        db_password = os.getenv("DB_PASSWORD")
+        if db_password:
+            db_password_set="Yes"
+        else:
+            db_password_set="No"
+    except:
+            db_password_set="No-Something Errored"
+
+    try:
+        db_password = os.getenv("OPENAI_API_KEY")
+        if db_password:
+            openai_key_set="Yes"
+        else:
+            openai_key_set="No"
+    except:
+            openai_key_set="No-Something Errored"
+
 
 
     #mode="live_mo_hc"
@@ -324,6 +342,9 @@ def project_status():
     print (f"Flask Running={flask_running}")
     print (f"Apache Running={apache_running}")
     print (f"OpenAI Connection working={openai_running}")
+    print (f"Env Variables - DB password set={db_password_set}")
+    print (f"Env Variables- Open AI Key found={openai_key_set}")
+    print ("====")
     print (f"Web Address={web_address}")
     print ("====")
 
