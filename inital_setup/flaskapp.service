@@ -1,0 +1,17 @@
+[Unit]
+Description=Flask Application Service
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/home/testing/Fidelity
+ExecStart=/usr/bin/python3.9 /home/testing/Fidelity/flask_run2.py
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+Environment="HOME=/root"
+Restart=always
+
+
+[Install]
+WantedBy=multi-user.target
+
