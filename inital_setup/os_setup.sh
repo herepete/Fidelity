@@ -7,6 +7,7 @@ pip3.9 install bs4 pandas
 pip3.9 install openai==0.28
 pip3.9 install flask-cors
 cp flaskapp.service /etc/systemd/system/flaskapp.service
+cp index.html /var/www/html
 
 echo "i have installed what i can..."
 echo "Next steps for you"
