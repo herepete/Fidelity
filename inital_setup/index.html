@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Funds Overview</title>
+    <style>
+    /* General Styling */
+    body { font-family: Arial, sans-serif; background-color: #f4f9fd; color: #333; }
+    .container { width: 85%; max-width: 1200px; margin: auto; padding: 20px; }
+    h1 { color: #1f5fbf; text-align: center; }
+
+    /* Tab Styling */
+    .tabs { display: flex; justify-content: center; margin-top: 20px; }
+    .tab-button { padding: 10px 20px; cursor: pointer; border: 1px solid #1f5fbf; color: #1f5fbf; background-color: #fff; }
+    .tab-button.active { background-color: #1f5fbf; color: #fff; }
+
+    /* Table Styling */
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.95rem; }
+    th, td { padding: 10px 15px; text-align: left; border-bottom: 1px solid #ddd; }
+    th { background-color: #1f5fbf; color: #fff; cursor: pointer; }
+    tr:nth-child(even) { background-color: #f4f9fd; }
+
+    /* Filter Styling */
+    .filter-input { margin-top: 10px; padding: 5px; width: 100%; max-width: 300px; }
+
+    /* Tab Content Styling */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Feedback Column Styling */
+    td {
+        vertical-align: top; /* Align text at the top of the cell */
+    }
+
+    td:last-child { /* Specific to the Feedback column */
+        max-width: 600px; /* Limit the width of the feedback column */
+        word-wrap: break-word; /* Wrap long words */
+        white-space: normal; /* Prevent horizontal scrolling */
+        padding: 10px; /* Add padding for better readability */
+        background-color: #f9f9f9; /* Light background for the feedback column */
+        border-radius: 5px; /* Add rounded corners for better aesthetics */
+    }
+
+    /* Styling for Feedback Lists */
+    ul {
+        padding-left: 20px; /* Indent the list items */
+        margin: 0; /* Remove default margin for lists */
+    }
+
+    li {
+        margin-bottom: 5px; /* Add spacing between list items */
+    }
+
+    strong {
+        color: #1f5fbf; /* Highlight headings in the feedback */
+    }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <h1>Investment Funds Overview</h1>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('all-funds')">All Funds</button>
+            <button class="tab-button" onclick="showTab('funds-passed')">Funds That Passed Checks</button>
+            <button class="tab-button" onclick="showTab('ai-feedback')">AI Feedback</button>
+        </div>
+
+        <!-- Section for All Funds -->
+        <div id="all-funds" class="tab-content active">
+            <h2>All Funds</h2>
+            <input type="text" class="filter-input" placeholder="Filter by Fund Name or ISIN..." oninput="filterTable('all-funds-table', this.value)">
+            <table id="all-funds-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Fund</th>
+                        <th>ISIN</th>
+                        <th>Log</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section for Funds Passed -->
+        <div id="funds-passed" class="tab-content">
+            <h2>Funds That Passed Checks</h2>
+            <input type="text" class="filter-input" placeholder="Filter by Fund Name or ISIN..." oninput="filterTable('funds-passed-table', this.value)">
+            <table id="funds-passed-table">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">ID</th>
+                        <th onclick="sortTable(1)">Date</th>
+                        <th onclick="sortTable(2)">Time</th>
+                        <th onclick="sortTable(3)">Fund Name</th>
+                        <th onclick="sortTable(4)">ISIN</th>
+                        <th onclick="sortTable(5)">Fee (%)</th>
+                        <th onclick="sortTable(6)">Yield (%)</th>
+                        <th onclick="sortTable(7)">Frequency</th>
+                        <th onclick="sortTable(8)">Y1 Annualized</th>
+                        <th onclick="sortTable(9)">Y3 Annualized</th>
+                        <th onclick="sortTable(10)">Y5 Annualized</th>
+                        <th onclick="sortTable(11)">Last Year’s Yield</th>
+                        <th onclick="sortTable(12)">Morning Star Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section for AI Feedback -->
+        <div id="ai-feedback" class="tab-content">
+            <h2>AI Feedback</h2>
+            <table id="ai-feedback-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Feedback</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Function to switch tabs
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`).classList.add('active');
+        }
+
+        // Fetch and display all funds
+        async function fetchAllFunds() {
+            try {
+                const response = await fetch('http://35.178.187.229:5000/api/all_funds');
+                const data = await response.json();
+                const tableBody = document.querySelector('#all-funds-table tbody');
+                tableBody.innerHTML = '';
+
+                data.forEach(fund => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td>${fund[0]}</td><td>${fund[1]}</td><td>${fund[2]}</td><td>${fund[3]}</td><td>${fund[4]}</td><td>${fund[5]}</td>`;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching all funds:', error);
+            }
+        }
+
+        // Fetch and display funds that passed checks
+        async function fetchFundsPassed() {
+            try {
+                const response = await fetch('http://35.178.187.229:5000/api/funds_passed');
+                const data = await response.json();
+                const tableBody = document.querySelector('#funds-passed-table tbody');
+                tableBody.innerHTML = '';
+
+                data.forEach(fund => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td>${fund[0]}</td><td>${fund[1]}</td><td>${fund[2]}</td><td>${fund[3]}</td><td>${fund[4]}</td><td>${fund[5]}</td><td>${fund[6]}</td><td>${fund[7]}</td><td>${fund[8]}</td><td>${fund[9]}</td><td>${fund[10]}</td><td>${fund[11]}</td><td>${fund[12]}</td>`;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching funds passed:', error);
+            }
+        }
+
+        // Fetch and display AI feedback
+	async function fetchAIFeedback() {
+	    try {
+        	const response = await fetch('http://35.178.187.229:5000/api/automation_feedback');
+	        const data = await response.json();
+        	console.log(data); // Check the API response structure
+
+	        const tableBody = document.querySelector('#ai-feedback-table tbody');
+        	tableBody.innerHTML = ''; // Clear existing data
+
+	        // Assuming the response is a list of lists
+        	data.forEach(feedback => {
+	            const row = document.createElement('tr');
+        	    row.innerHTML = `
+                	<td>${feedback[0]}</td>
+	                <td>${new Date(feedback[1]).toLocaleDateString()}</td>
+        	        <td>${feedback[2]}</td>
+                	<td>${feedback[3]}</td>
+	            `;
+        	    tableBody.appendChild(row);
+	        });
+	    } catch (error) {
+        	console.error('Error fetching AI feedback:', error);
+	    }
+	}
+
+        // Add event listener for AI Feedback tab
+        document.querySelector('.tab-button[onclick="showTab(\'ai-feedback\')"]').addEventListener('click', fetchAIFeedback);
+
+        // Filter function for tables
+        function filterTable(tableId, query) {
+            const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query.toLowerCase()) ? '' : 'none';
+            });
+        }
+
+        // Sorting function for "Funds That Passed Checks"
+        let sortDirection = true;
+        function sortTable(columnIndex) {
+            const table = document.getElementById("funds-passed-table").querySelector("tbody");
+            const rows = Array.from(table.rows);
+
+            rows.sort((a, b) => {
+                const cellA = a.cells[columnIndex].textContent.trim();
+                const cellB = b.cells[columnIndex].textContent.trim();
+                const valA = isNaN(cellA) ? cellA : parseFloat(cellA);
+                const valB = isNaN(cellB) ? cellB : parseFloat(cellB);
+
+                if (valA < valB) return sortDirection ? -1 : 1;
+                if (valA > valB) return sortDirection ? 1 : -1;
+                return 0;
+            });
+
+            sortDirection = !sortDirection;
+            rows.forEach(row => table.appendChild(row));
+        }
+
+        // Fetch data on page load
+        fetchAllFunds();
+        fetchFundsPassed();
+	fetchAIFeedback();
+    </script>
+</body>
+</html>
+
