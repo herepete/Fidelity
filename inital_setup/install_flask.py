@@ -1,3 +1,3 @@
-#!/usr/bin/python3
+#!/bin/bash
 pip install flask mysql-connector-python
 
