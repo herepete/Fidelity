@@ -47,6 +47,14 @@ run("systemctl enable mariadb")
 print("⚠️ Running MariaDB secure installation — follow the prompts.")
 run("mysql_secure_installation", check=False)
 
+print("🔐 Resetting MySQL root user to use password-based login...")
+
+reset_sql_path = os.path.join(SCRIPT_DIR, "mysql_reset_root_user.sql")
+run(f'mysql -u root < "{reset_sql_path}"')
+
+print("✅ Root user reset complete. Now requires password for login.")
+
+
 # Load config safely
 print("📚 Loading config.py")
 config = {}

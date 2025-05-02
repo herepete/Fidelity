@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #testing =1 # if 1 funds_to_Check is referenced rather than everything
 #funds_to_check=10 #used in testing
 #max_ongoing_charge=1 #if above this fund gets rejected
