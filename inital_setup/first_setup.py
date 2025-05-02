@@ -23,6 +23,7 @@ run("yum install -y python3-pip")
 run("pip3 install openai==0.28")
 run("pip3 install bs4")
 run("pip3 install mysql-connector-python")
+run("pip3 install tabulate")
 
 run("dnf install -y httpd wget php-fpm php-mysqli php-json php php-devel")
 
