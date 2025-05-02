@@ -32,7 +32,7 @@ print("1. Edit /root/.bashrc and add:\n   export OPENAI_API_KEY=\"your_api_key_h
 print(f"2. Edit {CONFIG_PATH} and set the following variables:")
 print("   DB_HOST = 'localhost'\n   DB_USER = 'your_username'\n   DB_PASS = 'your_password'")
 print(" rather than hard coding my approach is to .bashrc add export DB_PASS='bla' and then change to ")
-print("   \n   DB_PASS = os.getenv("DB_PASSWORD")")
+print("   \n   DB_PASS = os.getenv('DB_PASSWORD')")
 input("\n⏸️ Press Enter to continue and start the DB table creation...")
 
 # Install MariaDB
